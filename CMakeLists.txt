@@ -13,7 +13,10 @@ set(CMAKE_EXE_LINKER_FLAGS "-static")
 add_executable(PEA_ZAD1 src/main.cpp
         src/graphRepresentation/Graph.cpp src/graphRepresentation/Graph.h
         src/graphRepresentation/matrix/IncidenceMatrix.cpp src/graphRepresentation/matrix/IncidenceMatrix.h
+        src/graphRepresentation/matrix/IncidenceMatrixDirectedGraph.cpp src/graphRepresentation/matrix/IncidenceMatrixDirectedGraph.h
         src/graphRepresentation/matrix/AdjacencyMatrix.cpp src/graphRepresentation/matrix/AdjacencyMatrix.h
-        src/structures/arrayList/ArrayList.tpp
-        src/structures/arrayList/Edge.cpp
+        src/structures/arrayList/ArrayList.tpp src/structures/arrayList/ArrayList.h
+        src/structures/arrayList/Edge.cpp src/structures/arrayList/Edge.h
+        src/structures/arrayList/AbstractArray.tpp src/structures/arrayList/AbstractArray.h
+        src/travellingSalesmanProblem/ExhaustiveSearch.cpp src/travellingSalesmanProblem/ExhaustiveSearch.h
         )

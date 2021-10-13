@@ -12,6 +12,8 @@ class AdjacencyMatrix: public IncidenceMatrix{
 public:
     explicit AdjacencyMatrix(int noNodes);
 
+    explicit AdjacencyMatrix(std::string &fileName);
+
     void setWeightOfEdge(int beginNode, int endNode, int weight) override;
 
     void addEdge(int beginNode, int endNode, int weight) override;
