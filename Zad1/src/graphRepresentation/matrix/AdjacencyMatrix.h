@@ -22,7 +22,6 @@ public:
 
     void display() override;
 
-    ~AdjacencyMatrix() override;
 
     int getEdge(int beginNode, int endNode) override;
 
