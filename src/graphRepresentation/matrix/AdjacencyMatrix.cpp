@@ -101,11 +101,12 @@ AdjacencyMatrix::AdjacencyMatrix(std::string &fileName) {
             }
 //            graph_start = tab[2];
 //            graph_end = tab[3];
+            int ntab[getNumberOfNodes()];
             for (int i = 0; i < getNumberOfNodes(); i++)
-                if (Graph::file_read_line(file, tab, numberOfNodes)) {
+                if (Graph::file_read_line(file, ntab, numberOfNodes)) {
                     for(int k=0;k<getNumberOfNodes();k++){
-                        matrix[i][k]=tab[k];
-                        if(tab[k]!=0)
+                        matrix[i][k]=ntab[k];
+                        if(ntab[k]!=0)
                             setNumberOfEdges(getNumberOfEdges()+1);
                     }
                 } else {

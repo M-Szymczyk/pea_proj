@@ -45,6 +45,11 @@ template <class T> void AbstractArray<T>::replace(int firstIndex, int secondInde
         addAtIndex(buffer, secondIndex);
     }
 }
+
+template<class T>
+void AbstractArray<T>::setSize(int size) {
+    AbstractArray::size = size;
+}
 //
 //void AbstractArray::readFromFile(const std::string &fileName) {
 //    using namespace std;

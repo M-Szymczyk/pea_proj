@@ -40,6 +40,10 @@ public:
     T* getElement(int index) override;
 
     int getSize();
+
+    Array(int *tab, int size);
+
+    void add(T* pArray);
 };
 #include "Array.tpp"
 

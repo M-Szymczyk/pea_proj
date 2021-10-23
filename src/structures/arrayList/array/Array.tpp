@@ -14,6 +14,7 @@ template<typename T>
 Array<T>::~Array() {
     delete[] array;
 }
+
 template<typename T>
 void Array<T>::addAtBeginning(T* newElement) {
     AbstractArray<T>::size++;
@@ -122,5 +123,13 @@ template<typename T>
 int Array<T>::getSize() {
     return AbstractArray<T>::getSize();
 }
+
+template<typename T>
+Array<T>::Array(int *tab, int size) {
+    array= tab;
+    AbstractArray<T>::setSize(size);
+}
+
+
 
 

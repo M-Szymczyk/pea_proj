@@ -110,6 +110,7 @@ public:
      */
     virtual T* getElement(int index) = 0;
 
+    void setSize(int size);
 };
 
 #include "AbstractArray.tpp"
