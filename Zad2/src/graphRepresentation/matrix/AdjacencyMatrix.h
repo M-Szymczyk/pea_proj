@@ -10,6 +10,8 @@
 
 class AdjacencyMatrix: public IncidenceMatrix{
 public:
+    AdjacencyMatrix(int noNodes, int **matrix);
+
     explicit AdjacencyMatrix(int noNodes);
 
     explicit AdjacencyMatrix(std::string &fileName);

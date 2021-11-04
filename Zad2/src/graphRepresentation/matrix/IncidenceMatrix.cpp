@@ -233,3 +233,7 @@ void IncidenceMatrix::setWeightOfEdge(int beginNode, int endNode, int weight) {
     matrix[beginNode][w] = weight;
     matrix[endNode][w] = weight;
 }
+
+void IncidenceMatrix::setMatrix(int **mat) {
+    IncidenceMatrix::matrix = mat;
+}

@@ -119,3 +119,8 @@ AdjacencyMatrix::AdjacencyMatrix(std::string &fileName) {
     } else
         cout << "File error not opened  - OPEN" << endl;
 }
+
+AdjacencyMatrix::AdjacencyMatrix(int noNodes, int **matrix) {
+    setMatrix(matrix);
+    setNumberOfNodes(noNodes);
+}

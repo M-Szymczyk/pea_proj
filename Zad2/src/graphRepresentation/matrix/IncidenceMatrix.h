@@ -19,6 +19,10 @@ protected:
      * @return noEdge
      */
     int findNoEdge(int bN, int eN);
+
+public:
+    void setMatrix(int **matrix);
+
 public:
     void setWeightOfEdge(int beginNode, int endNode, int weight) override;
 

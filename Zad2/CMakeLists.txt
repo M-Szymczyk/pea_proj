@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(peaZad1)
+project(peaZad2)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_EXE_LINKER_FLAGS "-static")
@@ -10,7 +10,7 @@ set(CMAKE_EXE_LINKER_FLAGS "-static")
 #target_link_directories(${PROJECT_NAME} PUBLIC src/graphRepresentation)
 #target_link_libraries(${PROJECT_NAME} PUBLIC matrix)
 #
-add_executable(PEA_ZAD1 src/main.cpp
+add_executable(PEA_ZAD2 src/main.cpp
         src/graphRepresentation/Graph.cpp src/graphRepresentation/Graph.h
         src/graphRepresentation/matrix/IncidenceMatrix.cpp src/graphRepresentation/matrix/IncidenceMatrix.h
         src/graphRepresentation/matrix/IncidenceMatrixDirectedGraph.cpp src/graphRepresentation/matrix/IncidenceMatrixDirectedGraph.h

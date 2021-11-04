@@ -5,6 +5,7 @@
 #include "graphRepresentation/Graph.h"
 #include "graphRepresentation/matrix/AdjacencyMatrix.h"
 #include "travellingSalesmanProblem/exhaustiveSearch/ExhaustiveSearch.h"
+#include "travellingSalesmanProblem/held-Karp/HeldKarp.h"
 
 std::string inputFileName = ".INI";
 
@@ -95,7 +96,7 @@ class EngineTerminal {
     }
 
     static void
-    writeToFile(const std::string &outputFileName, long long array, int size, int *resultPath,
+    writeToFile(const std::string &outputFileName, long long array, int size, std::list<int> *resultPath,
                 int resultWeight, int pathSize) {
         using namespace std;
         fstream file;
@@ -105,8 +106,8 @@ class EngineTerminal {
         } else {
 
             file << array << ";" << resultWeight << "; [";
-            for (int j = 0; j < pathSize; j++)
-                file << resultPath[j] << " ";
+            for (auto p:*resultPath)
+                file << p << " ";
             file << " ]";
             file << endl;
 
@@ -125,56 +126,69 @@ public:
 
         string inputFile = data->getFileName();
         auto *g = new AdjacencyMatrix(inputFile);
-        auto time = 0;
+        double time;
 
         //g->display();
         std::cout << std::endl;
-        ExhaustiveSearch *resTSP = nullptr;
-        if(g->getNumberOfNodes()<=10){
+        HeldKarp *resTSP = nullptr;
+//        if (g->getNumberOfNodes() <= 10) {
+//            for (int i = 0; i < data->getRepetitions(); i++) {
+//                start = read_QPC();
+//                resTSP = new ExhaustiveSearch(g, 0);
+//
+//                elapsed = read_QPC() - start;
+//                time += (elapsed * 1000) / frequency;
+//            }
+//            time /= data->getRepetitions();
+//            writeToFile(file, time, data->getRepetitions(), resTSP->getPath(),
+//                        resTSP->getWeight(), g->getNumberOfNodes() + 1);
+//            cout << "\nCzas dzialania algorytmu: " << std::dec << time << " ms; Waga sciezki: "
+//                 << resTSP->getWeight() << "; Poprawna sciezka: [";//mikro sekundy
+//            for (int j = 0; j < g->getNumberOfNodes() + 1; j++)
+//                cout << resTSP->getPath()[j] << " ";
+//            cout << "]";
+//        } else {
             for (int i = 0; i < data->getRepetitions(); i++) {
                 start = read_QPC();
-                resTSP = new ExhaustiveSearch(g, 0);
-
-                elapsed = read_QPC() - start;
-                time += (elapsed * 1000) / frequency;
-            }
-            time /= data->getRepetitions();
-            writeToFile(file, time, data->getRepetitions(), resTSP->getPath(),
-                        resTSP->getWeight(), g->getNumberOfNodes() + 1);
-            cout << "\nCzas dzialania algorytmu: " << std::dec << time << " ms; Waga sciezki: "
-                 << resTSP->getWeight() << "; Poprawna sciezka: [";//mikro sekundy
-            for (int j = 0; j < g->getNumberOfNodes() + 1; j++)
-                cout << resTSP->getPath()[j] << " ";
-            cout << "]";
-        }
-        else {
-            for (int i = 0; i < data->getRepetitions(); i++) {
-                start = read_QPC();
-                resTSP = new ExhaustiveSearch(g, 0);
+                resTSP = new HeldKarp(g, 0);
                 elapsed = read_QPC() - start;
                 time = (elapsed * 1000) / frequency;
 
                 writeToFile(file, time, data->getRepetitions(), resTSP->getPath(),
                             resTSP->getWeight(), g->getNumberOfNodes() + 1);
                 cout << "\nCzas dzialania algorytmu: " << std::dec << time << " ms; Waga sciezki: "
-                     << resTSP->getWeight() << "; Poprawna sciezka: [";//mikro sekundy
-                for (int j = 0; j < g->getNumberOfNodes() + 1; j++)
-                    cout << resTSP->getPath()[j] << " ";
+                     << resTSP->getWeight() << "; Otrzymana sciezka: [";//mikro sekundy
+                for (auto p:*resTSP->getPath())
+                    cout << p << " ";
                 cout << "]";
+                delete resTSP;
             }
-        }
+ //       }
 
-        if (resTSP != nullptr) {
-            delete resTSP;
             delete g;
-        }
     }
 };
 
 
 int main() {
-    std::cout << "\nProblem komiwojazera - metoda brute force";
+    std::cout << "\nProblem komiwojazera - held-karp algorytm ";
     using namespace std;
+//    int **matrix = new int *[4];
+//    int matrixData[4][4] = {{0,4,1,3},
+//                            {4,0,2,1},
+//                            {1,2,0,5},
+//                            {3,1,5,0}
+//    };
+//
+//    for (int i = 0; i < 4; i++)
+//        matrix[i] = new int[4];
+//    for (int i = 0; i < 4; i++)
+//        for(int j=0;j<4;j++)
+//            matrix[i][j] =matrixData[i][j];
+//
+//    Graph *graph = new AdjacencyMatrix(4, matrix);
+//    graph->display();
+//    HeldKarp(graph,0).display();
 
     string outputFileName;
     auto data = new ArrayList<Data>;
