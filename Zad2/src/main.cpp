@@ -36,6 +36,7 @@ public:
         std::cout << "\nNazwa instancji: " << getFileName() << ", liczba powtorzen: " << getRepetitions()
                   << ", poprawna waga sciezki: " << getCorrectWeight() << ", poprawna sciezka: "
                   << getCorrectPath();
+        std::cout << "\nCzas dzialania algorytmu | Waga sciezki  | Poprawna sciezka ";
     }
 
     static std::basic_string<char> readData(ArrayList<Data> *data) {
@@ -74,7 +75,7 @@ public:
         file.close();
     }
 
-    void writeDataToFile(const std::string &outputFileName, Data *data) {
+    static void writeDataToFile(const std::string &outputFileName, Data *data) {
         using namespace std;
         fstream file;
         file.open(outputFileName, ios::app);
@@ -95,9 +96,8 @@ class EngineTerminal {
         return ((long long int) count.QuadPart);
     }
 
-    static void
-    writeToFile(const std::string &outputFileName, long long array, int size, std::list<int> *resultPath,
-                int resultWeight, int pathSize) {
+    static void writeToFile(const std::string &outputFileName, long long array, int size, std::list<int> resultPath,
+                            int resultWeight, int pathSize) {
         using namespace std;
         fstream file;
         file.open(outputFileName, ios::app);
@@ -106,7 +106,7 @@ class EngineTerminal {
         } else {
 
             file << array << ";" << resultWeight << "; [";
-            for (auto p:*resultPath)
+            for (auto p: resultPath)
                 file << p << " ";
             file << " ]";
             file << endl;
@@ -115,6 +115,7 @@ class EngineTerminal {
             file.close();
         }
     }
+
 
 public:
     static void automaticTest(const std::string &file, Data *data) {
@@ -131,41 +132,84 @@ public:
         //g->display();
         std::cout << std::endl;
         HeldKarp *resTSP = nullptr;
-//        if (g->getNumberOfNodes() <= 10) {
-//            for (int i = 0; i < data->getRepetitions(); i++) {
-//                start = read_QPC();
-//                resTSP = new ExhaustiveSearch(g, 0);
+        //sprawdz ile mniej wiecej zajmnie test
+//        start = read_QPC();
+//        resTSP = new HeldKarp(g, 0);
 //
-//                elapsed = read_QPC() - start;
-//                time += (elapsed * 1000) / frequency;
-//            }
-//            time /= data->getRepetitions();
-//            writeToFile(file, time, data->getRepetitions(), resTSP->getPath(),
-//                        resTSP->getWeight(), g->getNumberOfNodes() + 1);
-//            cout << "\nCzas dzialania algorytmu: " << std::dec << time << " ms; Waga sciezki: "
-//                 << resTSP->getWeight() << "; Poprawna sciezka: [";//mikro sekundy
-//            for (int j = 0; j < g->getNumberOfNodes() + 1; j++)
-//                cout << resTSP->getPath()[j] << " ";
-//            cout << "]";
-//        } else {
+//        elapsed = read_QPC() - start;
+//        time += (elapsed * 1000) / frequency;//ns
+        //if (time == 0) {
+        if (g->getNumberOfNodes() < 10) {
+            HeldKarp *lastRepresentation = nullptr;
+            for (int i = 0; i < data->getRepetitions(); i++) {
+                for (int j = 0; j < 1000; j++) {
+                    start = read_QPC();
+                    resTSP = new HeldKarp(g, 0);
+
+                    elapsed = read_QPC() - start;
+                    time += (elapsed * 1000000) / frequency;//ns
+                    if (j == 999)
+                        lastRepresentation = resTSP;
+                    else
+                        delete resTSP;
+                    //system("pause");
+                }
+
+                time /= 1000;
+                writeToFile(file, time, data->getRepetitions(), lastRepresentation->getPath(),
+                            lastRepresentation->getWeight(), g->getNumberOfNodes() + 1);
+                printResult(time, lastRepresentation);
+                delete lastRepresentation;
+
+            }
+        } else {
             for (int i = 0; i < data->getRepetitions(); i++) {
                 start = read_QPC();
                 resTSP = new HeldKarp(g, 0);
                 elapsed = read_QPC() - start;
-                time = (elapsed * 1000) / frequency;
-
+                time = (elapsed * 1000000) / frequency;//ns
                 writeToFile(file, time, data->getRepetitions(), resTSP->getPath(),
                             resTSP->getWeight(), g->getNumberOfNodes() + 1);
-                cout << "\nCzas dzialania algorytmu: " << std::dec << time << " ms; Waga sciezki: "
-                     << resTSP->getWeight() << "; Otrzymana sciezka: [";//mikro sekundy
-                for (auto p:*resTSP->getPath())
-                    cout << p << " ";
-                cout << "]";
+                printResult(time, resTSP);
                 delete resTSP;
             }
- //       }
+        }
+        delete g;
+    }
 
-            delete g;
+    static void printResult(double time, const HeldKarp *resTSP) {
+        // std::cout << "\nCzas dzialania algorytmu: " << std::dec;
+        int i = 0;
+        while (true) {
+            if (time < 1000)
+                break;
+            time /= 1000;
+            i++;
+            if(i==3)
+                break;
+        }
+        if (time < 100)
+            printf("        %3.2f", time);
+        else
+            printf("        %3.f", time);
+        switch (i) {
+            case 0:
+                std::cout << " ns";
+                break;
+            case 1:
+                std::cout << " ms";
+                break;
+            case 2:
+                std::cout << " s";
+                break;
+            default:
+                std::cout << "";
+        }
+        printf("       |       %3.d", resTSP->getWeight());
+        std::cout << "     | [";
+        for (auto p: resTSP->getPath())
+            std::cout << p << " ";
+        std::cout << "]\n";
     }
 };
 
@@ -174,10 +218,10 @@ int main() {
     std::cout << "\nProblem komiwojazera - held-karp algorytm ";
     using namespace std;
 //    int **matrix = new int *[4];
-//    int matrixData[4][4] = {{0,4,1,3},
-//                            {4,0,2,1},
-//                            {1,2,0,5},
-//                            {3,1,5,0}
+//    int matrixData[4][4] = {{0,11,7,123},
+//                            {14,0,8,6},
+//                            {1,17,0,15},
+//                            {3,15,15,0}
 //    };
 //
 //    for (int i = 0; i < 4; i++)
@@ -189,12 +233,16 @@ int main() {
 //    Graph *graph = new AdjacencyMatrix(4, matrix);
 //    graph->display();
 //    HeldKarp(graph,0).display();
+//    auto res = ExhaustiveSearch(graph,0);
+//    cout<<endl<<"Waga: 0"<<res.getWeight()<<" ";
+//    for(int i =0;i<graph->getNumberOfNodes()+1;i++)
+//        cout<<res.getPath()[i]<<" ";
 
     string outputFileName;
     auto data = new ArrayList<Data>;
 
     outputFileName = Data::readData(data);
-    Data *poitData= nullptr;
+    Data *poitData = nullptr;
     for (int i = 0; i < data->getSize(); i++) {
         poitData = data->getElement(i);
         cout << "\n-----------------------------------------------------------------------------";

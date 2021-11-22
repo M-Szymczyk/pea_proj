@@ -11,10 +11,12 @@
 
 class HeldKarpCost{
 public:
-    int currentCost;
-    std::list<int> *currentPath;
+    int weight;
+    std::list<int> path;
 
-    HeldKarpCost(int currentCost, std::list<int> *currentPath);
+    HeldKarpCost(int currentCost, std::list<int> currentPath);
+
+    HeldKarpCost();
 
     virtual ~HeldKarpCost();
     void display() const;
@@ -22,33 +24,41 @@ public:
 
 class HeldKarp {
     Graph *graph;
-    std::list<int> *path;
-    int weight;
+    std::vector<std::list<HeldKarpCost>> costs;
+    HeldKarpCost heldKarpCost;
     int startNode;
 public:
+
     HeldKarp(Graph *graph, int startNode);
 
-    /**
-    * @return solved tsp problem for given graph
-    */
-    //int *getPath() const;
+
 
     /**
      * @return weight of circuit
      */
     int getWeight() const;
 
-
-
-    std::list<int> *getPath() const;
+    /**
+    * @return solved tsp problem for given graph
+    */
+    std::list<int> getPath() const;
 
     void display();
 
     virtual ~HeldKarp();
 
-    HeldKarpCost *cost(int source, std::list<int> &unvisitedNodesList);
+    /**Method find the best circle of all nodes*/
+    HeldKarpCost cost(int source, std::list<int> &unvisitedNodesList);
+    /**
+     * Metoda sprawdza czy nie obliczono już poprzednika dla danego zestawu
+     * @param unvisitedNodesList
+     * @return
+     */
+    HeldKarpCost findPrevious(std::list<int> &unvisitedNodesList);
 
-    static HeldKarpCost *getCost(int source, HeldKarpCost *result, HeldKarpCost *minCost) ;
+    static HeldKarpCost getCost(HeldKarpCost &result, HeldKarpCost &minCost);
+
+    HeldKarpCost find(std::list<int> &unvisitedNodesList);
 };
 
 
