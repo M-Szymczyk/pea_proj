@@ -58,7 +58,7 @@ public:
 
     static HeldKarpCost getCost(HeldKarpCost &result, HeldKarpCost &minCost);
 
-    HeldKarpCost find(std::list<int> &unvisitedNodesList);
+    HeldKarpCost find(std::list<int> &unvisitedNodesList, int source);
 };
 
 
