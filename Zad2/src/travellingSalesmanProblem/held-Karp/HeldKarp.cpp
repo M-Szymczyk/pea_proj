@@ -41,7 +41,7 @@ HeldKarpCost HeldKarp::cost(int source, std::list<int> &unvisitedNodesList) {
     } else {/// zbiór z większą liczba elementów: znajdź najtańszą ścieżkę
         int nodeVal;
         HeldKarpCost result = HeldKarpCost(), minCost = HeldKarpCost(), result2 = HeldKarpCost();
-        if (unvisitedNodesList.size() >= 2) {
+        if (unvisitedNodesList.size() >= 1) {
             if (!costs.empty())
                 minCost = find(unvisitedNodesList, source);
             //find(unvisitedNodesList);
