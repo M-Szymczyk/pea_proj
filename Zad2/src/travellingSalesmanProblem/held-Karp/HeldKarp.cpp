@@ -19,10 +19,7 @@ HeldKarp::HeldKarp(Graph *graph, int startN) : graph(graph), startNode(startN) {
     // początkowe wartości
     heldKarpCost.weight = INT_MAX;
     heldKarpCost.path = std::list<int>();
-    costs = std::vector<std::list<HeldKarpCost>>();
-    for (int i = 0; i < graph->getNumberOfNodes(); i++) {
-        costs.push_back(*new std::list<HeldKarpCost>);
-    }
+    costs = std::map<int, HeldKarpCost>();
 
     for (int i = 0; i < graph->getNumberOfNodes(); i++)
         heldKarpCost.path.push_back(i);
@@ -45,11 +42,8 @@ HeldKarpCost HeldKarp::cost(int source, std::list<int> &unvisitedNodesList) {
         int nodeVal;
         HeldKarpCost result = HeldKarpCost(), minCost = HeldKarpCost(), result2 = HeldKarpCost();
         if (unvisitedNodesList.size() >= 2) {
-            minCost = find(unvisitedNodesList);
-            if (minCost.weight != INT_MAX) {
-                minCost.weight += graph->getEdge(source, minCost.path.front());
-                minCost.path.push_front(source);
-            }
+            if (!costs.empty())
+                minCost = find(unvisitedNodesList, source);
             //find(unvisitedNodesList);
         }
         if (minCost.weight == INT_MAX) {
@@ -73,11 +67,7 @@ HeldKarpCost HeldKarp::cost(int source, std::list<int> &unvisitedNodesList) {
                 /// obliczanie kosztu danego zbioru
                 result.weight += graph->getEdge(source, nodeVal);
                 result.path.push_front(source);
-                auto pointerToLists = costs.begin();
-                std::advance(pointerToLists, result.path.size() - 3);
-                pointerToLists->push_back(HeldKarpCost(result));
-
-
+                costs.insert(std::make_pair(HeldKarpCost::hashCode(result.path), HeldKarpCost(result)));
 
                 /// zmiana najlepszej ścieżki jeżeli znaleziono lepsza
                 minCost = getCost(result, minCost);
@@ -94,13 +84,15 @@ HeldKarpCost HeldKarp::cost(int source, std::list<int> &unvisitedNodesList) {
                 result = HeldKarpCost();
             }
         }
-//        if (result2.weight != INT_MAX && minCost.weight != result2.weight) {
-//            std::cout << "\n-------------------------------------------------------------------------------";
-//            std::cout << "\nres1: ";
-//            minCost.display();
-//            result2.display();
-//            std::cout << "\n##############################################################################";
-//        }
+        if (result2.weight != INT_MAX && minCost.weight != result2.weight) {
+            std::cout << "\n-------------------------------------------------------------------------------";
+            std::cout << "\nres1: ";
+            minCost.display();
+            result2.display();
+            std::cout << "\n##############################################################################";
+        }
+//        if (result2.weight != INT_MAX)
+//            return result2;
         return minCost;
     }
 }
@@ -115,54 +107,31 @@ HeldKarpCost HeldKarp::getCost(HeldKarpCost &result, HeldKarpCost &minCost) {
     return minCost;
 }
 
-HeldKarpCost HeldKarp::find(std::list<int> &unvisitedNodesList) {
-    HeldKarpCost min = HeldKarpCost(),result;
+HeldKarpCost HeldKarp::find(std::list<int> &unvisitedNodesList, int source) {
+    unvisitedNodesList.push_back(0);
+    HeldKarpCost min = HeldKarpCost(), result;
     do {
 //        for(auto e:unvisitedNodesList)
 //            std::cout << e << " ";
 //        std::cout << std::endl;
-        result = findPrevious(unvisitedNodesList);
-        if(result.weight<=min.weight)
+        unvisitedNodesList.push_front(source);
+        auto searchingResult = costs.find(HeldKarpCost::hashCode(unvisitedNodesList));
+        unvisitedNodesList.remove(source);
+        if (searchingResult != costs.end())
+            result = searchingResult->second;
+        //else continue;
+        if (result.weight <= min.weight)
             min = result;
-    } while (std::next_permutation(unvisitedNodesList.begin(), unvisitedNodesList.end()));
-    return min;
-}
 
-HeldKarpCost HeldKarp::findPrevious(std::list<int> &unvisitedNodesList) {
-    /// Przesuniecie iteratora na vectr zawierający ścieżki o tej samej wielkości
-    auto pointerToLists = costs.begin();
-    std::advance(pointerToLists, unvisitedNodesList.size() - 2);
-    /// wyszukiwanie tej samej ścieżki
-    auto pointerToElementOfList = pointerToLists->begin();
-    while (pointerToElementOfList != pointerToLists->end()) {
-        auto val2 = unvisitedNodesList.begin(), val1 = pointerToElementOfList->path.begin();
-        if (*val1 == *val2) {
-            bool theSamePath = true;
-            for (int i = 0; i < unvisitedNodesList.size(); i++) {
-                if (*val1 != *val2) {
-                    theSamePath = false;
-                    break;
-                }
-                val1++;
-                val2++;
-            }
-            if (theSamePath) {
-//                std::cout<<"\nfind  ";
-//                for(auto un:unvisitedNodesList)
-//                    std::cout<<un<<"  ";
-//                pointerToElementOfList->display();
-                return *pointerToElementOfList;
-            }
-        }
-        pointerToElementOfList++;
-    }
-    return {};
+    } while (std::next_permutation(unvisitedNodesList.begin(), unvisitedNodesList.end()));
+    unvisitedNodesList.erase(unvisitedNodesList.begin());
+    return {min};
 }
 
 HeldKarp::~HeldKarp() {
-    for (auto list: costs) {
-        list.clear();
-    }
+//    for (auto list: costs) {
+//        list.clear();
+//    }
     costs.clear();
 }
 
@@ -193,3 +162,15 @@ HeldKarpCost::HeldKarpCost(int c, std::list<int> currentPath) : weight(c),
 
 
 }
+
+long long int HeldKarpCost::hashCode(const std::list<int>& list) {
+    std::hash<int> hash_pathElement;
+    long long hashCode = 1;
+    for (auto i: list) {
+        hashCode = 31 * hashCode + hash_pathElement(i);
+    }
+    std::hash<int> hash_weight;
+    return hashCode;
+}
+
+

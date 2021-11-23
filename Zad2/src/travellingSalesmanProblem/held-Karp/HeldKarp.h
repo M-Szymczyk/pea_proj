@@ -7,6 +7,8 @@
 
 
 #include <list>
+#include <map>
+
 #include "../../graphRepresentation/Graph.h"
 
 class HeldKarpCost{
@@ -20,11 +22,13 @@ public:
 
     virtual ~HeldKarpCost();
     void display() const;
+
+    static long long int hashCode(const std::list<int>& list);
 };
 
 class HeldKarp {
     Graph *graph;
-    std::vector<std::list<HeldKarpCost>> costs;
+    std::map<int,HeldKarpCost> costs;
     HeldKarpCost heldKarpCost;
     int startNode;
 public:
@@ -58,7 +62,7 @@ public:
 
     static HeldKarpCost getCost(HeldKarpCost &result, HeldKarpCost &minCost);
 
-    HeldKarpCost find(std::list<int> &unvisitedNodesList);
+    HeldKarpCost find(std::list<int> &unvisitedNodesList, int source);
 };
 
 
