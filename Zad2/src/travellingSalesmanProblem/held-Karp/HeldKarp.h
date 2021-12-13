@@ -8,10 +8,11 @@
 
 #include <list>
 #include <map>
+#include <unordered_map>
 
 #include "../../graphRepresentation/Graph.h"
 
-class HeldKarpCost{
+class HeldKarpCost {
 public:
     int weight;
     std::list<int> path;
@@ -21,21 +22,20 @@ public:
     HeldKarpCost();
 
     virtual ~HeldKarpCost();
+
     void display() const;
 
-    static long long int hashCode(const std::list<int>& list);
+    static long long int hashCode(const std::list<int> &list);
 };
 
 class HeldKarp {
     Graph *graph;
-    std::map<int,HeldKarpCost> costs;
+    std::unordered_map<long long, HeldKarpCost> costs;
     HeldKarpCost heldKarpCost;
     int startNode;
 public:
 
     HeldKarp(Graph *graph, int startNode);
-
-
 
     /**
      * @return weight of circuit
@@ -47,21 +47,24 @@ public:
     */
     std::list<int> getPath() const;
 
-    void display();
-
     virtual ~HeldKarp();
 
-    /**Method find the best circle of all nodes*/
-    HeldKarpCost cost(int source, std::list<int> &unvisitedNodesList);
     /**
-     * Metoda sprawdza czy nie obliczono już poprzednika dla danego zestawu
-     * @param unvisitedNodesList
-     * @return
+     * Method find the best circuit for given set
+     * @param source node
+     * @param unvisitedNodesList rest of nodes
+     * @return best circuit for given set
      */
-    HeldKarpCost findPrevious(std::list<int> &unvisitedNodesList);
+    HeldKarpCost cost(int source, std::list<int> &unvisitedNodesList);
 
     static HeldKarpCost getCost(HeldKarpCost &result, HeldKarpCost &minCost);
 
+    /**
+     * Method search for result for given subset
+     * @param unvisitedNodesList subset
+     * @param source source of subset
+     * @return result
+     */
     HeldKarpCost find(std::list<int> &unvisitedNodesList, int source);
 };
 
