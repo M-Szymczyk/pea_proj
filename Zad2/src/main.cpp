@@ -1,13 +1,13 @@
 #include <iostream>
 #include <windows.h>
 #include <iomanip>
-
+#include <string>
 #include "graphRepresentation/Graph.h"
 #include "graphRepresentation/matrix/AdjacencyMatrix.h"
 #include "travellingSalesmanProblem/exhaustiveSearch/ExhaustiveSearch.h"
 #include "travellingSalesmanProblem/held-Karp/HeldKarp.h"
 
-std::string inputFileName = ".INI";
+
 
 class Data {
     std::string fileName, correctPath;
@@ -36,12 +36,13 @@ public:
         std::cout << "\nNazwa instancji: " << getFileName() << ", liczba powtorzen: " << getRepetitions()
                   << ", poprawna waga sciezki: " << getCorrectWeight() << ", poprawna sciezka: "
                   << getCorrectPath();
-        std::cout << "\nCzas dzialania algorytmu | Waga sciezki  | Poprawna sciezka ";
+        std::cout << "\nCzas dzialania algorytmu | Waga sciezki  | Otrzymana sciezka ";
     }
 
     static std::basic_string<char> readData(ArrayList<Data> *data) {
         using namespace std;
         ifstream file;
+        std::string inputFileName = ".INI";
         file.open(inputFileName.c_str());
         while (!file.eof()) {
             if (file.is_open()) {
@@ -158,7 +159,7 @@ public:
                 time /= 1000;
                 writeToFile(file, time, data->getRepetitions(), lastRepresentation->getPath(),
                             lastRepresentation->getWeight(), g->getNumberOfNodes() + 1);
-                printResult(time, lastRepresentation);
+                printResult(time, lastRepresentation, nullptr);
                 delete lastRepresentation;
 
             }
@@ -170,14 +171,14 @@ public:
                 time = (elapsed * 1000000) / frequency;//ns
                 writeToFile(file, time, data->getRepetitions(), resTSP->getPath(),
                             resTSP->getWeight(), g->getNumberOfNodes() + 1);
-                printResult(time, resTSP);
+                printResult(time, resTSP, g);
                 delete resTSP;
             }
         }
         delete g;
     }
 
-    static void printResult(double time, const HeldKarp *resTSP) {
+    static void printResult(double time, const HeldKarp *resTSP, AdjacencyMatrix *pMatrix) {
         // std::cout << "\nCzas dzialania algorytmu: " << std::dec;
         int i = 0;
         while (true) {
@@ -185,7 +186,7 @@ public:
                 break;
             time /= 1000;
             i++;
-            if(i==3)
+            if (i == 3)
                 break;
         }
         if (time < 100)
