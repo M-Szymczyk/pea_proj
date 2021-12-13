@@ -19,4 +19,4 @@ add_executable(PEA_ZAD2 src/main.cpp
         src/structures/arrayList/Edge.cpp src/structures/arrayList/Edge.h
         src/structures/arrayList/AbstractArray.tpp src/structures/arrayList/AbstractArray.h
         src/travellingSalesmanProblem/exhaustiveSearch/ExhaustiveSearch.cpp src/travellingSalesmanProblem/exhaustiveSearch/ExhaustiveSearch.h
-        src/travellingSalesmanProblem/held-Karp/HeldKarp.cpp   src/travellingSalesmanProblem/held-Karp/HeldKarp.h)
+        src/travellingSalesmanProblem/held-Karp/HeldKarp.cpp   src/travellingSalesmanProblem/held-Karp/HeldKarp.h src/travellingSalesmanProblem/tabuSearch/TabuSearch.cpp src/travellingSalesmanProblem/tabuSearch/TabuSearch.h)
