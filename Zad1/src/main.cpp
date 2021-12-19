@@ -73,7 +73,7 @@ public:
         file.close();
     }
 
-    void writeDataToFile(const std::string &outputFileName, Data *data) {
+    static void writeDataToFile(const std::string &outputFileName, Data *data) {
         using namespace std;
         fstream file;
         file.open(outputFileName, ios::app);
@@ -94,9 +94,8 @@ class EngineTerminal {
         return ((long long int) count.QuadPart);
     }
 
-    static void
-    writeToFile(const std::string &outputFileName, long long array, int size, int *resultPath,
-                int resultWeight, int pathSize) {
+    static void writeToFile(const std::string &outputFileName, long long array, int size, std::vector<int> resultPath,
+                            int resultWeight, int pathSize) {
         using namespace std;
         fstream file;
         file.open(outputFileName, ios::app);
@@ -105,8 +104,8 @@ class EngineTerminal {
         } else {
 
             file << array << ";" << resultWeight << "; [";
-            for (int j = 0; j < pathSize; j++)
-                file << resultPath[j] << " ";
+            for (auto p: resultPath)
+                file << p << " ";
             file << " ]";
             file << endl;
 
@@ -114,6 +113,7 @@ class EngineTerminal {
             file.close();
         }
     }
+
 
 public:
     static void automaticTest(const std::string &file, Data *data) {
@@ -125,7 +125,7 @@ public:
 
         string inputFile = data->getFileName();
         auto *g = new AdjacencyMatrix(inputFile);
-        auto time = 0;
+        double time;
 
         //g->display();
         std::cout << std::endl;
@@ -175,12 +175,32 @@ public:
 int main() {
     std::cout << "\nProblem komiwojazera - metoda brute force";
     using namespace std;
+//    int **matrix = new int *[4];
+//    int matrixData[4][4] = {{0,11,7,123},
+//                            {14,0,8,6},
+//                            {1,17,0,15},
+//                            {3,15,15,0}
+//    };
+//
+//    for (int i = 0; i < 4; i++)
+//        matrix[i] = new int[4];
+//    for (int i = 0; i < 4; i++)
+//        for(int j=0;j<4;j++)
+//            matrix[i][j] =matrixData[i][j];
+//
+//    Graph *graph = new AdjacencyMatrix(4, matrix);
+//    graph->display();
+//    HeldKarp(graph,0).display();
+//    auto res = ExhaustiveSearch(graph,0);
+//    cout<<endl<<"Waga: 0"<<res.getWeight()<<" ";
+//    for(int i =0;i<graph->getNumberOfNodes()+1;i++)
+//        cout<<res.getPath()[i]<<" ";
 
     string outputFileName;
     auto data = new ArrayList<Data>;
 
     outputFileName = Data::readData(data);
-    Data *poitData= nullptr;
+    Data *poitData = nullptr;
     for (int i = 0; i < data->getSize(); i++) {
         poitData = data->getElement(i);
         cout << "\n-----------------------------------------------------------------------------";

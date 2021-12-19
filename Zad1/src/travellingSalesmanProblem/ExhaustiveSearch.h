@@ -10,7 +10,7 @@
 
 class ExhaustiveSearch {
     Graph *graph;
-    int *path;
+    std::vector<int> path;
     int weight;
     int startNode;
 public:
@@ -24,7 +24,7 @@ public:
     /**
      * @return solved tsp problem for given graph
      */
-    int *getPath() const;
+    std::vector<int> getPath() const;
 
     /**
      * @return weight of circuit

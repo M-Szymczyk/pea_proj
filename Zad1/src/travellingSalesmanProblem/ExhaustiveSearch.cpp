@@ -28,7 +28,7 @@ void ExhaustiveSearch::generatePermutation(int a[], int size, int n) {
 ExhaustiveSearch::ExhaustiveSearch(Graph *g, int sNode) {
     startNode = sNode;
     graph = g;
-    path = nullptr;
+    path = std::vector<int>();
     weight = INT_MAX;
     //prepare list of nodes (list of nodes without starting node
     auto sPath = new int[g->getNumberOfNodes() - 1];
@@ -60,18 +60,22 @@ void ExhaustiveSearch::calculateWeight(int *a, int n) {
 }
 
 void ExhaustiveSearch::setNewBestPath(const int *nPath, int nWeight) {
-    delete path;
-    path = new int[graph->getNumberOfNodes() - 1];
+    path.clear();
     for (int i = 0; i < graph->getNumberOfNodes() - 1; i++)
-        path[i] = nPath[i];
+        path.push_back(nPath[i]);
     weight = nWeight;
 }
 
-int *ExhaustiveSearch::getPath() const {
-    int *nPath= new int[graph->getNumberOfNodes()+1];
-    nPath[0]=nPath[graph->getNumberOfNodes()]=startNode;
-    for (int i = 1; i < graph->getNumberOfNodes(); i++)
-        nPath[i] = path[i-1];
+std::vector<int> ExhaustiveSearch::getPath() const {
+    std::vector<int> nPath= std::vector<int>();
+
+    for (int i = 1; i < graph->getNumberOfNodes(); i++) {
+        nPath.push_back( path[i-1]);
+    }
+    nPath.push_back(0);
+    nPath.insert(nPath.begin(),0);
+    //nPath[0]=nPath[graph->getNumberOfNodes()]=startNode;
+
     return nPath;
 }
 
