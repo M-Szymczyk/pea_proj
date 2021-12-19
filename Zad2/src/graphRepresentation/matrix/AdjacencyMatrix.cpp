@@ -101,7 +101,7 @@ AdjacencyMatrix::AdjacencyMatrix(std::string &fileName) {
             }
 //            graph_start = tab[2];
 //            graph_end = tab[3];
-            int ntab[100];
+            int ntab[1000];
             for (int i = 0; i < getNumberOfNodes(); i++)
                 if (Graph::file_read_line(file, ntab, numberOfNodes)) {
                     for(int k=0;k<getNumberOfNodes();k++){
