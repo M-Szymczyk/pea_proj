@@ -35,3 +35,21 @@ int Path::calculateWeight(){
     return cost;
 }
 
+Path::Path(Graph *graph,int startNode) : graph(graph) {
+    std::vector<int> pat;
+    pat.push_back(startNode);
+    for (int i = 0; i < graph->getNumberOfNodes(); i++) {
+        if (i != startNode) {
+            pat.push_back(i);
+        }
+    }
+    pat.push_back(startNode);
+    path = pat;
+    weight = calculateWeight();
+}
+
+void Path::shuffle(std::mt19937 gen) {
+    std::shuffle(path.begin() , path.end(), gen);
+    calculateWeight();
+}
+

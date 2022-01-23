@@ -18,11 +18,9 @@ class TabuSearch {
     Graph *graph{};
     Path globalPath = Path(0, std::vector<int>(), nullptr);
     std::unordered_map<long long,Move> tabuList;
-    int startTerm,dividerOfTerm,iterations, optimum,  maxTabuListSize;
+    int startTerm,dividerOfTerm,iterations, optimum,startNode;
 public:
     const Path &getGlobalPath() const;
-
-    void run();
 
     TabuSearch(Graph *graph, int startNode, std::mt19937 gen, int term, int divTerm, int iter, int opt,
                int maxTabuListSize);
@@ -38,6 +36,14 @@ public:
     void showPRD(int iter, int i) const;
 
     void showPRD(int iter) const;
+
+    void showPRD(int iter, Move move) const;
+
+    long long int read_QPC();
+
+    void run(std::mt19937 gen);
+
+    void run(std::vector<int> path);
 };
 
 

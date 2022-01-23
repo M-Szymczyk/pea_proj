@@ -14,13 +14,15 @@ public:
 
     Path(std::vector<int> path, Graph *g);
 
+    Path(Graph *graph, int startNode);
+
     virtual ~Path();
 
     void display() const;
 
     int calculateWeight();
 
-    int countDifrenceIfSwapNeighbours(const std::vector<unsigned int> &path, int i, int j);
+    void shuffle(std::mt19937 gen);
 };
 
 #include <list>

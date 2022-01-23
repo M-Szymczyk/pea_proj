@@ -11,11 +11,11 @@
 
 class Data {
     std::string fileName, correctPath;
-    int repetitions, correctWeight, term, divTerm, iterations;
+    int repetitions, correctWeight, term, divTerm, iterations,time;
 public:
-    Data(std::string fileName, std::string correctPath, int repetitions, int correctWeight, int ter, int div, int iter)
+    Data(std::string fileName, std::string correctPath, int repetitions, int correctWeight, int ter, int div, int iter,int tim)
         : fileName(std::move(fileName)), correctPath(std::move(correctPath)), repetitions(repetitions),
-        correctWeight(correctWeight), term(ter), divTerm(div), iterations(iter) {}
+        correctWeight(correctWeight), term(ter), divTerm(div), iterations(iter),time(tim) {}
 
     const std::string &getFileName() const {
         return fileName;
@@ -46,9 +46,9 @@ public:
     }
 
     void display() const {
-        std::cout << "\nNazwa instancji: " << getFileName() << ", liczba powtorzen: " << getRepetitions()
-                  << ", poprawna waga sciezki: " << getCorrectWeight() <<", kadencja: "<< getTerm()
-                  <<", dzielnik kadencji: "<<getDivTerm() <<", liczba iteracji: "<< getIterations()<< ", poprawna sciezka: "
+        std::cout << "\nNazwa instancji: " << getFileName() << ", l. powtorzen: " << getRepetitions()
+                  << ", poprawna wynik: " << getCorrectWeight() <<", kadencja: "<< getTerm()
+                  <<", dzielnik kadencji: "<<getDivTerm() <<", l. iteracji: "<< getIterations()<<", czas: "<<time<< ", poprawna sciezka: "
                   << getCorrectPath();
         std::cout << "\nCzas dzialania algorytmu | Waga sciezki  | % poprawnego wyniku| Otrzymana sciezka ";
     }
@@ -62,7 +62,7 @@ public:
             if (file.is_open()) {
 
                 string s, exampleFileName;
-                int repe, weight,term, divTerm, iterations;
+                int repe, weight,term, divTerm, iterations,ti;
                 getline(file, s);
 
                 if (file.fail() || s.empty())
@@ -92,7 +92,10 @@ public:
                 pos = s.find(delimiter);
                 iterations= stoi(s.substr(0,pos));
                 s.erase(0, pos + delimiter.length());
-                data->addAtEnding(new Data(exampleFileName, s, repe, weight,term,divTerm,iterations));
+                pos = s.find(delimiter);
+                ti= stoi(s.substr(0,pos));
+                s.erase(0, pos + delimiter.length());
+                data->addAtEnding(new Data(exampleFileName, s, repe, weight,term,divTerm,iterations,ti));
             } else
                 cout << "File error not opened  - OPEN" << endl;
         }
@@ -109,6 +112,10 @@ public:
             file << data->getFileName() << " " << data->getRepetitions() << " "
                  << data->getCorrectWeight() << " " << data->getCorrectPath() << "" << endl;
         }
+    }
+
+    int getTime() const {
+        return time;
     }
 };
 
@@ -182,7 +189,7 @@ public:
         for (int i = 0; i < data->getRepetitions(); i++) {
             start = read_QPC();
             resTSP = new TabuSearch(g, 0, gen, data->getTerm(), data->getDivTerm(),
-                                    data->getIterations(), data->getCorrectWeight(), 900);
+                                    data->getIterations(), data->getCorrectWeight(), data->getTime());
             elapsed = read_QPC() - start;
             time = (elapsed * 1000000) / frequency;//ns
             writeToFile(file, time, data->getRepetitions(), resTSP->getGlobalPath().path,
@@ -226,8 +233,8 @@ public:
         printf("       |       %3.d", resTSP->getGlobalPath().weight);
         std::cout << "     | " << 100 * (((float) (resTSP->getGlobalPath().weight - opt)) / (float) opt)
                   << "% |[";
-//        for (auto p: resTSP->getGlobalPath().path)
-//            std::cout << p << " ";
+        for (auto p: resTSP->getGlobalPath().path)
+            std::cout << p << " ";
 
     }
 };
@@ -237,7 +244,7 @@ int main() {
     std::mt19937 gen(rd());
 
 
-    std::cout << "\nProblem komiwojazera - held-karp algorytm ";
+    std::cout << "\nProblem komiwojazera - algorytm yabu search";
     using namespace std;
     int **matrix = new int *[4];
     int matrixData[4][4] = {{0,  11, 7,  123},
