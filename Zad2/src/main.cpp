@@ -7,15 +7,22 @@
 #include "travellingSalesmanProblem/exhaustiveSearch/ExhaustiveSearch.h"
 #include "travellingSalesmanProblem/held-Karp/HeldKarp.h"
 #include "travellingSalesmanProblem/tabuSearch/TabuSearch.h"
+#include "travellingSalesmanProblem/geneticAlgorithms/GeneticAlgorithm.h"
 
 
 class Data {
     std::string fileName, correctPath;
-    int repetitions, correctWeight, term, divTerm, iterations,time;
+    int repetitions, correctWeight, popSize, popCopy, noGeneration, selectionType, crossOverType, inheritanceType,
+    startAge;
+    double probability;
 public:
-    Data(std::string fileName, std::string correctPath, int repetitions, int correctWeight, int ter, int div, int iter,int tim)
+    Data(std::string fileName, std::string correctPath, int repetitions, int correctWeight,int  popSize,int popCopy,
+         int noGeneration,int selectionType, int crossOverType, double probability,int inheritanceType,
+         int startAge)
         : fileName(std::move(fileName)), correctPath(std::move(correctPath)), repetitions(repetitions),
-        correctWeight(correctWeight), term(ter), divTerm(div), iterations(iter),time(tim) {}
+        correctWeight(correctWeight),popSize(popSize), popCopy(popCopy), noGeneration(noGeneration),
+        selectionType(selectionType), crossOverType(crossOverType), probability(probability),inheritanceType(inheritanceType),
+            startAge(startAge) {}
 
     const std::string &getFileName() const {
         return fileName;
@@ -33,23 +40,45 @@ public:
         return correctWeight;
     }
 
-    int getTerm() const {
-        return term;
+
+    int getPopSize() const {
+        return popSize;
     }
 
-    int getDivTerm() const {
-        return divTerm;
+    int getPopCopy() const {
+        return popCopy;
     }
 
-    int getIterations() const {
-        return iterations;
+    int getNoGeneration() const {
+        return noGeneration;
+    }
+
+    int getSelectionType() const {
+        return selectionType;
+    }
+
+    int getCrossOverType() const {
+        return crossOverType;
+    }
+
+    double getProbability() const {
+        return probability;
+    }
+
+    int getInheritanceType() const {
+        return inheritanceType;
+    }
+
+    int getStartAge() const {
+        return startAge;
     }
 
     void display() const {
         std::cout << "\nNazwa instancji: " << getFileName() << ", l. powtorzen: " << getRepetitions()
-                  << ", poprawna wynik: " << getCorrectWeight() <<", kadencja: "<< getTerm()
-                  <<", dzielnik kadencji: "<<getDivTerm() <<", l. iteracji: "<< getIterations()<<", czas: "<<time<< ", poprawna sciezka: "
-                  << getCorrectPath();
+                  << ", poprawna wynik: " << getCorrectWeight() <<", rozmiar populacji: "<<getPopSize()
+                  <<", liczba dzieci: "<<getPopCopy()<<", l.generacji: "<< getNoGeneration()<<", typ selekcji: "
+                  <<getSelectionType()<<", typ krzyzowania: "<<getCrossOverType()<<", praw. mutacji:"<<getProbability()
+                  <<", poprawna sciezka: "<< getCorrectPath();
         std::cout << "\nCzas dzialania algorytmu | Waga sciezki  | % poprawnego wyniku| Otrzymana sciezka ";
     }
 
@@ -62,7 +91,8 @@ public:
             if (file.is_open()) {
 
                 string s, exampleFileName;
-                int repe, weight,term, divTerm, iterations,ti;
+                int repe, weight, popSize, PopCopy, noGen,typeSelec, typeCross,inheritanceType, startAge;
+                double probl;
                 getline(file, s);
 
                 if (file.fail() || s.empty())
@@ -84,18 +114,31 @@ public:
                 weight = stoi(s.substr(0, pos));
                 s.erase(0, pos + delimiter.length());
                 pos = s.find(delimiter);
-                term = stoi(s.substr(0,pos));
+                popSize = stoi(s.substr(0,pos));
                 s.erase(0, pos + delimiter.length());
                 pos = s.find(delimiter);
-                divTerm= stoi(s.substr(0,pos));
+                PopCopy= stoi(s.substr(0,pos));
                 s.erase(0, pos + delimiter.length());
                 pos = s.find(delimiter);
-                iterations= stoi(s.substr(0,pos));
+                noGen= stoi(s.substr(0,pos));
                 s.erase(0, pos + delimiter.length());
                 pos = s.find(delimiter);
-                ti= stoi(s.substr(0,pos));
+                typeSelec= stoi(s.substr(0,pos));
                 s.erase(0, pos + delimiter.length());
-                data->addAtEnding(new Data(exampleFileName, s, repe, weight,term,divTerm,iterations,ti));
+                pos = s.find(delimiter);
+                typeCross= stoi(s.substr(0,pos));
+                s.erase(0, pos + delimiter.length());
+                pos = s.find(delimiter);
+                probl= stod(s.substr(0,pos))/100;
+                s.erase(0, pos + delimiter.length());
+                pos = s.find(delimiter);
+                inheritanceType= stoi(s.substr(0,pos));
+                s.erase(0, pos + delimiter.length());
+                pos = s.find(delimiter);
+                startAge= stoi(s.substr(0,pos));
+                s.erase(0, pos + delimiter.length());
+                data->addAtEnding(new Data(exampleFileName, s, repe, weight,popSize,
+                                           PopCopy,noGen,typeSelec,typeCross,probl,inheritanceType, startAge));
             } else
                 cout << "File error not opened  - OPEN" << endl;
         }
@@ -114,9 +157,6 @@ public:
         }
     }
 
-    int getTime() const {
-        return time;
-    }
 };
 
 class EngineTerminal {
@@ -157,51 +197,31 @@ public:
         QueryPerformanceFrequency((LARGE_INTEGER *) &frequency);
         string inputFile = data->getFileName();
         auto *g = new AdjacencyMatrix(inputFile);
-        double time;
+        double time, avgTime=0, avgMis=0;
+        int avgWeight=0;
 
-        //g->display();
-        //std::cout << std::endl;
-        TabuSearch *resTSP = nullptr;
-/*//        if (g->getNumberOfNodes() < 1) {
-//            TabuSearch *lastRepresentation = nullptr;
-//            for (int i = 0; i < data->getRepetitions(); i++) {
-//                for (int j = 0; j < 1000; j++) {
-//                    start = read_QPC();
-//                    resTSP = new TabuSearch(g, 0, gen, 1, 1, 10000, 0);
-//
-//                    elapsed = read_QPC() - start;
-//                    time += (elapsed * 1000000) / frequency;//ns
-//                    if (j == 999)
-//                        lastRepresentation = resTSP;
-//                    else
-//                        delete resTSP;
-//                    //system("pause");
-//                }
-//
-//                time /= 1000;
-//                writeToFile(file, time, data->getRepetitions(), lastRepresentation->getGlobalPath().path,
-//                            lastRepresentation->getGlobalPath().weight, g->getNumberOfNodes() + 1);
-//                printResult(time, lastRepresentation, nullptr);
-//                delete lastRepresentation;
-//
-//            }
-//        } else {*/
+        GeneticAlgorithm *resTSP = nullptr;
+
         for (int i = 0; i < data->getRepetitions(); i++) {
+            std::uniform_int_distribution<> startNode(0, g->getNumberOfNodes() - 1);
             start = read_QPC();
-            resTSP = new TabuSearch(g, 0, gen, data->getTerm(), data->getDivTerm(),
-                                    data->getIterations(), data->getCorrectWeight(), data->getTime());
+            resTSP = new GeneticAlgorithm(g,startNode(gen),gen,data->getPopSize(),data->getProbability(),data->getPopCopy(),
+                                          data->getNoGeneration(),data->getSelectionType(),data->getCrossOverType(),
+                                          data->getCorrectWeight(),data->getInheritanceType(),data->getStartAge());
             elapsed = read_QPC() - start;
             time = (elapsed * 1000000) / frequency;//ns
             writeToFile(file, time, data->getRepetitions(), resTSP->getGlobalPath().path,
                         resTSP->getGlobalPath().weight, g->getNumberOfNodes() + 1);
             printResult(time, resTSP, g, data->getCorrectWeight());
+            avgTime+=time; avgWeight+=resTSP->getGlobalPath().weight;
+            avgMis+=100 * (((float) (resTSP->getGlobalPath().weight -  data->getCorrectWeight())) / (float)  data->getCorrectWeight());
             delete resTSP;
         }
-        // }
+        printResult(avgTime/data->getRepetitions(),avgWeight/data->getRepetitions(),avgMis/data->getRepetitions());
         delete g;
     }
 
-    static void printResult(double time, const TabuSearch *resTSP, AdjacencyMatrix *pMatrix, int opt) {
+    static void printResult(double time, GeneticAlgorithm *resTSP, AdjacencyMatrix *pMatrix, int opt) {
         // std::cout << "\nCzas dzialania algorytmu: " << std::dec;
         std::cout << "\n";
         int i = 0;
@@ -233,42 +253,78 @@ public:
         printf("       |       %3.d", resTSP->getGlobalPath().weight);
         std::cout << "     | " << 100 * (((float) (resTSP->getGlobalPath().weight - opt)) / (float) opt)
                   << "% |[";
-        for (auto p: resTSP->getGlobalPath().path)
-            std::cout << p << " ";
+//        for (auto p: resTSP->getGlobalPath().path)
+//            std::cout << p << " ";
+
+    }
+    static void printResult(double time,int avgWeight , double avgMis) {
+        std::cout << "\n-------------------------------------------------------------\n";
+        // std::cout << "\nCzas dzialania algorytmu: " << std::dec;
+        int i = 0;
+        while (true) {
+            if (time < 1000)
+                break;
+            time /= 1000;
+            i++;
+            if (i == 3)
+                break;
+        }
+
+        printf("        %3.2f", time);
+        switch (i) {
+            case 0:
+                std::cout << " ns";
+                break;
+            case 1:
+                std::cout << " ms";
+                break;
+            case 2:
+                std::cout << " s";
+                break;
+            default:
+                std::cout << "";
+        }
+
+        printf("       |       %3.d", avgWeight);
+        printf("       |       %3.2f", avgMis);
 
     }
 };
 
 int main() {
-    std::default_random_engine rd(time(0));
-    std::mt19937 gen(rd());
+//    std::default_random_engine rd(time(0));
+//    std::mt19937 gen(rd());
 
-
-    std::cout << "\nProblem komiwojazera - algorytm yabu search";
+    std::random_device r;
+    std::seed_seq seed{r(), r(), r(), r(), r(), r(), r(), r()};
+    std::mt19937 gen(rand());
+    std::cout << "\nProblem komiwojazera - algorytm genetyczny";
     using namespace std;
-    int **matrix = new int *[4];
-    int matrixData[4][4] = {{0,  11, 7,  123},
-                            {14, 0,  8,  6},
-                            {1,  17, 0,  15},
-                            {3,  15, 15, 0}
-    };
 
-    for (int i = 0; i < 4; i++)
-        matrix[i] = new int[4];
-    for (int i = 0; i < 4; i++)
-        for (int j = 0; j < 4; j++)
-            matrix[i][j] = matrixData[i][j];
-
-    //Graph *graph = new AdjacencyMatrix(4, matrix);
-//    graph->display();
-//    HeldKarp(graph,0).display();
+//    int **matrix = new int *[4];
+//    int matrixData[4][4] = {{0,  11, 7,  123},
+//                            {14, 0,  8,  6},
+//                            {1,  17, 0,  15},
+//                            {3,  15, 15, 0}
+//    };
+//
+//    for (int i = 0; i < 4; i++)
+//        matrix[i] = new int[4];
+//    for (int i = 0; i < 4; i++)
+//        for (int j = 0; j < 4; j++)
+//            matrix[i][j] = matrixData[i][j];
+//
+//    Graph *graph = new AdjacencyMatrix(4, matrix);
+   // graph->display();
+    //HeldKarp(graph,0).display();
 //    auto res = ExhaustiveSearch(graph,0);
 //    cout<<endl<<"Waga: 0"<<res.getWeight()<<" ";
 //    for(int i =0;i<graph->getNumberOfNodes()+1;i++)
 //        cout<<res.getPath()[i]<<" ";
-//    std::string file = "tsp_6.txt";
+//    std::string file = "tsp_10.txt";
 //    auto graph =new  AdjacencyMatrix(file );
-//    auto r = TabuSearch(graph, 0, gen, 1, 1, 10000);
+//    auto result = GeneticAlgorithm(graph, 0, gen,10,0.3,10,
+//                                   10,0,0,10);
 //    std::cout<<"\nWaga:"<<r.getGlobalPath().weight<<" ";
 //    for(auto res:r.getGlobalPath().path){
 //        std::cout<<res<<" ";

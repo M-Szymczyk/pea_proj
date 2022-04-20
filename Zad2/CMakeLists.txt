@@ -21,4 +21,5 @@ add_executable(PEA_ZAD2 src/main.cpp
         src/travellingSalesmanProblem/exhaustiveSearch/ExhaustiveSearch.cpp src/travellingSalesmanProblem/exhaustiveSearch/ExhaustiveSearch.h
         src/travellingSalesmanProblem/held-Karp/HeldKarp.cpp   src/travellingSalesmanProblem/held-Karp/HeldKarp.h
         src/travellingSalesmanProblem/tabuSearch/TabuSearch.cpp src/travellingSalesmanProblem/tabuSearch/TabuSearch.h
-        src/travellingSalesmanProblem/Path.cpp src/travellingSalesmanProblem/Path.h)
+        src/travellingSalesmanProblem/Path.cpp src/travellingSalesmanProblem/Path.h
+        src/travellingSalesmanProblem/geneticAlgorithms/GeneticAlgorithm.cpp src/travellingSalesmanProblem/geneticAlgorithms/GeneticAlgorithm.h)

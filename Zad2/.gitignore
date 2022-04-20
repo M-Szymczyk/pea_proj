@@ -1,4 +1,11 @@
 # Project exclude paths
+
+/248881_z2.zip
+/248881_z5.zip
+/248881_z5/
+/248881_z6/
+/248881_z6.zip
+/cmake-build-release/
 /cmake-build-debug/
 
 # Created by https://www.toptal.com/developers/gitignore/api/c++,clion,cmake
